@@ -1,9 +1,12 @@
-%matplotlib inline
+# %matplotlib inline
 import os
 import re
 import pandas as pd
 import datetime as dt
 import numpy as np
+import matplotlib
+
+matplotlib.use('Agg')
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 import matplotlib.pyplot as plt
@@ -52,11 +55,23 @@ allaccgeo[allaccgeo["Vehicles involved"] == 3].plot(ax = ax, markersize = 20, co
 allaccgeo[allaccgeo["Vehicles involved"] > 3].plot(ax = ax, markersize = 20, color = "white", marker = "^", label = "Accidents greater than 3 cars")
 plt.legend(prop={'size':15})
 
-janacc = allaccgeo[allaccgeo["Hour"] == 20]
 
-fig,ax = plt.subplots(figsize= (15,15))
-constreet_map.plot(ax=ax, alpha = .4, color = "grey")
-janacc[janacc["Vehicles involved"] == 2].plot(ax = ax, markersize = 20, color = "blue", marker = "o", label = "Accidents involving 2 cars")
-janacc[janacc["Vehicles involved"] == 3].plot(ax = ax, markersize = 20, color = "red", marker = "^", label = "Accidents involving 3 cars")
-janacc[janacc["Vehicles involved"] > 3].plot(ax = ax, markersize = 20, color = "white", marker = "^", label = "Accidents greater than 3 cars")
-plt.legend(prop={'size':15})
+
+
+Weekdays = ["Monday", "Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday"]
+output_path = '../charts/accidents'
+
+for day in Weekdays:
+
+	montacc = allaccgeo[allaccgeo["Weekday"] == day]
+
+	ax = plt.subplots(figsize= (15,15))
+	constreet_map.plot(ax=ax, alpha = .4, color = "grey")
+	montacc[montacc["Vehicles involved"] == 2].plot(ax = ax, markersize = 20, color = "blue", marker = "o", label = "Accidents involving 2 cars")
+	montacc[montacc["Vehicles involved"] == 3].plot(ax = ax, markersize = 20, color = "red", marker = "^", label = "Accidents involving 3 cars")
+	montacc[montacc["Vehicles involved"] > 3].plot(ax = ax, markersize = 20, color = "white", marker = "^", label = "Accidents greater than 3 cars")
+	ax.axis('off')
+	plt.legend(prop={'size':15})
+	filepath = os.path.join(output_path, day+'_accidents.png')
+	ax1 = ax.get_figure()
+	ax1.savefig(filepath, dpi=400)
